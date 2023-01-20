@@ -9,16 +9,16 @@ services:
       context: ./
       dockerfile: Dockerfile
     working_dir: /var/www/
-    container_name: app-modularized
+    container_name: app_modularized
     volumes:
       - ./:/var/www
     restart: always
     networks:
-      - ntwk_app-modularized
+      - network_stc1
 
   nginx:
     image: nginx:alpine
-    container_name: app-modularized_nginx
+    container_name: app_modularized_nginx
     restart: always
     ports:
       - 8090:80
@@ -26,11 +26,11 @@ services:
       - ./:/var/www
       - ./docker/nginx/:/etc/nginx/conf.d/
     networks:
-      - ntwk_app-modularized    
+      - network_stc1    
 
   postgres:
     image: postgres:12.10-alpine
-    container_name: "app-modularized_postgres"
+    container_name: "app_modularized_postgres"
     restart: always
     environment:
       POSTGRES_DB: transparencia
@@ -38,12 +38,12 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_HOST_AUTH_METHOD: "trust"
     volumes:
-      - "./config/postgres/data:/var/lib/postgresql/data"
+      - "./docker/postgres/data:/var/lib/postgresql/data"
     ports:
       - "5440:5432"
     networks:
-      - ntwk_app-modularized
+      - network_stc1
 
 networks:
-  ntwk_app-modularized:
+  network_stc1:
     driver: bridge
