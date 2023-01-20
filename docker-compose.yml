@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      args:
+        user: thiel-serra
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    working_dir: /var/www/
+    container_name: app-modularized
+    volumes:
+      - ./:/var/www
+    restart: always
+    networks:
+      - ntwk_app-modularized
+
+  nginx:
+    image: nginx:alpine
+    container_name: app-modularized_nginx
+    restart: always
+    ports:
+      - 8090:80
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/:/etc/nginx/conf.d/
+    networks:
+      - ntwk_app-modularized    
+
+  postgres:
+    image: postgres:12.10-alpine
+    container_name: "app-modularized_postgres"
+    restart: always
+    environment:
+      POSTGRES_DB: transparencia
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+    volumes:
+      - "./config/postgres/data:/var/lib/postgresql/data"
+    ports:
+      - "5440:5432"
+    networks:
+      - ntwk_app-modularized
+
+networks:
+  ntwk_app-modularized:
+    driver: bridge
